@@ -1,3 +1,7 @@
+import 'dart:io';
+
+import 'package:ecommerce_app/widgets/apple_pay.dart';
+import 'package:ecommerce_app/widgets/google_pay.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ecommerce_app/blocs/cart/cart_bloc.dart';
@@ -44,6 +48,10 @@ class CustomNavBar extends StatelessWidget {
         return _buildGoToCheckoutNavBar(context);
       case '/checkout':
         return _buildOrderNowNavBar(context);
+      case '/order_confirmation':
+        return _buildNavBar(context);
+      case '/payment_method':
+        return _buildNavBar(context);
 
       default:
         _buildNavBar(context);
@@ -153,21 +161,32 @@ class CustomNavBar extends StatelessWidget {
             );
           }
           if (state is CheckoutLoaded) {
-            return ElevatedButton(
-              onPressed: () {
-                context
-                    .read<CheckoutBloc>()
-                    .add(ConfirmCheckout(checkout: state.checkout));
-              },
-              style: ElevatedButton.styleFrom(
-                primary: Colors.white,
-                shape: RoundedRectangleBorder(),
-              ),
-              child: Text(
-                'ORDER NOW',
-                style: Theme.of(context).textTheme.headline3,
-              ),
-            );
+            return Platform.isIOS
+                ? ApplePay(
+                    products: state.products!,
+                    total: state.total!,
+                  )
+                : GooglePay(
+                    products: state.products!,
+                    total: state.total!,
+                  );
+            // return ElevatedButton(
+            //   onPressed: () {
+            //     // context
+            //     //     .read<CheckoutBloc>()
+            //     //     .add(ConfirmCheckout(checkout: state.checkout));
+            //     // Navigator.pushNamed(context, '/order_confirmation');
+            //     Navigator.pushNamed(context, '/order_confirmation');
+            //   },
+            //   style: ElevatedButton.styleFrom(
+            //     primary: Colors.white,
+            //     shape: RoundedRectangleBorder(),
+            //   ),
+            //   child: Text(
+            //     'ORDER NOW',
+            //     style: Theme.of(context).textTheme.headline3,
+            //   ),
+            // );
           } else {
             return Text('Something went wrong');
           }
